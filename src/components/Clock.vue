@@ -2,14 +2,14 @@
   <h1>Clock</h1>
   <div class="clock">
     <p>
-      Current Date & Time: {{ dateTime }}<br>
-      Secounds: {{ counter }}
+      {{ date }}<br>
+      {{ time }}
     </p>
     <div class="pannikin">
-<!--      <div v-for="n in 6" :key="n">-->
+      <!--      <div v-for="n in 6" :key="n">-->
       <div v-for="n in 6" :key="n" :style="{ transform: 'rotate('+ (30 * n) +'deg)'}">
-        <span>{{ n }}</span>
-        <span>{{ n + 6 }}</span>
+        <span :style="{ transform: 'rotate('+ (-30 * n) +'deg)'}">{{ n }}</span>
+        <span :style="{ transform: 'rotate('+ (-30 * n) +'deg)'}">{{ n + 6 }}</span>
       </div>
     </div>
     <div class="hour-hand hands-clock" :style="{ transform: 'rotate('+ hourDeg +'deg)'}"></div>
@@ -23,11 +23,11 @@ export default {
   name: "Clock",
   data() {
     return {
-      counter: 0,
+      time: '',
       hourDeg: 0,
       minuteDeg: 0,
       secondsDeg: 0,
-      dateTime: ''
+      date: ''
     }
   },
   methods: {
@@ -43,17 +43,15 @@ export default {
         setInterval(() => {
           const current = new Date();
           const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
-          // const unit = 6;
           const hour = current.getHours();
-          const hour12 = hour / 2;
-          this.hourDeg = 6 * hour12;
+          const hour12 = (hour < 12 ? hour : hour - 12);
           const minutes = current.getMinutes();
           this.minuteDeg = 6 * minutes;
+          this.hourDeg = (30 * hour12) + (minutes * .5);
           const seconds = current.getSeconds();
           this.secondsDeg = 6 * seconds;
-          const time = hour + ":" + minutes + ":" + seconds;
-          this.dateTime = date + ' ' + time;
-          this.counter = seconds;
+          this.time = hour + ":" + minutes + ":" + seconds;
+          this.date = date;
         }, 500)
   }
 }
@@ -98,7 +96,7 @@ $clock-size: 250px;
 
   .pannikin {
     &,
-    & > div{
+    & > div {
       position: absolute;
       height: 100%;
       width: 30px;
@@ -109,12 +107,14 @@ $clock-size: 250px;
       span {
         position: absolute;
         background-color: white;
+        border: 1px solid rgba(0,0,0,.2);
         border-radius: 50%;
+        margin: 3px 0;
         width: 30px;
         height: 30px;
         left: 0;
         line-height: 30px;
-        font-weight: bold;
+        font-weight: 900;
         text-align: center;
 
         & + span {
